@@ -1,0 +1,10 @@
+.env/
+.git/
+*.sw[a-z]
+static
+.idea/
+deployments/development/env_mac
+deployments/development/env-doston
+media
+*.py[a-z]
+__pycache__/
