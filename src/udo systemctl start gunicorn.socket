@@ -1,0 +1,17 @@
+[0;1;31mWarning:[0m The unit file, source configuration file or drop-ins of gunicorn.service changed on disk. Run 'systemctl daemon-reload' to reload units.
+[0;1;31m●[0m gunicorn.service - gunicorn daemon
+     Loaded: loaded (/etc/systemd/system/gunicorn.service; disabled; vendor preset: enabled)
+     Active: [0;1;31mfailed[0m (Result: exit-code) since Wed 2021-03-17 21:16:20 UTC; 12min ago
+TriggeredBy: [0;1;32m●[0m gunicorn.socket
+   Main PID: 24845 (code=exited, status=1/FAILURE)
+
+Mar 17 21:16:20 ubuntu-s-1vcpu-1gb-sfo3-01 gunicorn[24845]:   File "/home/asilbek/movieGo/env/lib/python3.8/site-packages/gunicorn/arbiter.py", line 242, in handle_chld
+Mar 17 21:16:20 ubuntu-s-1vcpu-1gb-sfo3-01 gunicorn[24845]:     self.reap_workers()
+Mar 17 21:16:20 ubuntu-s-1vcpu-1gb-sfo3-01 gunicorn[24845]:   File "/home/asilbek/movieGo/env/lib/python3.8/site-packages/gunicorn/arbiter.py", line 525, in reap_workers
+Mar 17 21:16:20 ubuntu-s-1vcpu-1gb-sfo3-01 gunicorn[24845]:     raise HaltServer(reason, self.WORKER_BOOT_ERROR)
+Mar 17 21:16:20 ubuntu-s-1vcpu-1gb-sfo3-01 gunicorn[24845]: gunicorn.errors.HaltServer: <HaltServer 'Worker failed to boot.' 3>
+Mar 17 21:16:20 ubuntu-s-1vcpu-1gb-sfo3-01 systemd[1]: [0;1;39m[0;1;31m[0;1;39mgunicorn.service: Main process exited, code=exited, status=1/FAILURE[0m
+Mar 17 21:16:20 ubuntu-s-1vcpu-1gb-sfo3-01 systemd[1]: [0;1;38;5;185m[0;1;39m[0;1;38;5;185mgunicorn.service: Failed with result 'exit-code'.[0m
+Mar 17 21:16:20 ubuntu-s-1vcpu-1gb-sfo3-01 systemd[1]: [0;1;38;5;185m[0;1;39m[0;1;38;5;185mgunicorn.service: Start request repeated too quickly.[0m
+Mar 17 21:16:20 ubuntu-s-1vcpu-1gb-sfo3-01 systemd[1]: [0;1;38;5;185m[0;1;39m[0;1;38;5;185mgunicorn.service: Failed with result 'exit-code'.[0m
+Mar 17 21:16:20 ubuntu-s-1vcpu-1gb-sfo3-01 systemd[1]: [0;1;31m[0;1;39m[0;1;31mFailed to start gunicorn daemon.[0m
