@@ -25,6 +25,8 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     "accounts",
+    "common",
+    "movies",
 ]
 
 INSTALLED_APPS = BASE_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -118,7 +120,7 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
-    "DATETIME_FORMAT": "%Y-%m-%d",
+    "DATETIME_FORMAT": "%Y-%m-%d , %H:%M:%S",
 }
 SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
@@ -139,8 +141,7 @@ CORS_ALLOW_HEADERS = [
     "x-requested-with",
 ]
 
-DATE_INPUT_FORMATS = ["%Y-%m-%d"]
-DATETIME_FORMAT = "%d-%m-%Y %H:%M:%S"
+
 
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
