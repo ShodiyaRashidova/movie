@@ -3,8 +3,8 @@ from rest_framework.generics import CreateAPIView, UpdateAPIView, \
     DestroyAPIView, RetrieveAPIView, ListAPIView
 from rest_framework.permissions import IsAdminUser
 
-from common.models import News
-from common.pagination import AdminPagination
+from ..models import News
+from ..pagination import AdminPagination, Pagination
 
 
 class NewsSerializer(serializers.Serializer):
@@ -65,3 +65,31 @@ class AdminListNewsView(ListAPIView):
 
     def get_queryset(self):
         return News.objects.all()
+
+
+
+class ListNewsSerializer(serializers.Serializer):
+    guid = serializers.UUIDField(read_only=True)
+    thumbnail = serializers.CharField()
+    title = serializers.CharField(max_length=255)
+
+
+class DetailNewsSerializer(serializers.Serializer):
+    guid = serializers.UUIDField(read_only=True)
+    thumbnail = serializers.CharField()
+    title = serializers.CharField(max_length=255)
+    content = serializers.CharField()
+
+
+class ListNewsView(ListAPIView):
+    serializer_class = ListNewsSerializer
+    pagination_class = Pagination
+
+    def get_queryset(self):
+        return News.objects.get_visible()
+
+
+class DetailNewsView(RetrieveAPIView):
+    serializer_class = DetailNewsSerializer
+    lookup_field = "guid"
+    queryset = News.objects.get_visible()

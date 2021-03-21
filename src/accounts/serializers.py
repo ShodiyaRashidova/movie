@@ -19,7 +19,6 @@ class RegisterSerializer(serializers.ModelSerializer):
 class EmailVerificationSerializer(serializers.Serializer):
     token = serializers.CharField(max_length=555)
 
-
 class LogInSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         attrs = super().validate(attrs)
@@ -60,8 +59,8 @@ class PasswordUpdateSerializer(serializers.Serializer):
 
 
 class PasswordResetSerializer(serializers.Serializer):
-    email = serializers.EmailField(min_length=2, required=True)
-    redirect_url = serializers.CharField(max_length=500, required=False)
+    email = serializers.EmailField(min_length=2)
+    redirect_url = serializers.CharField(max_length=500)
 
     def validate(self, attrs):
         if not get_user_model().objects.filter(email=attrs["email"]).exists():
@@ -88,3 +87,7 @@ class NewPasswordSerializer(serializers.Serializer):
             return attrs
         except Exception as e:
             raise AuthenticationFailed('The reset link is invalid', 401)
+
+
+class LogoutSerizalizer(serializers.Serializer):
+    refresh = serializers.CharField(max_length=555)

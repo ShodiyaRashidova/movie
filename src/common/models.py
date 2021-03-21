@@ -37,7 +37,16 @@ def upload_directory_path(instance, filename):
     return f"image/{folder}/{filename}"
 
 
-class ImageStorage(BaseModel):
+class ImageStorage(models.Model):
+    guid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
+    created_date = models.DateTimeField(auto_now_add=True)
+    modified_date = models.DateTimeField(auto_now=True)
+    creator = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="+",
+    )
     image = models.ImageField(
         upload_to=upload_directory_path,
         validators=[validate_image_file_extension],
@@ -51,8 +60,10 @@ class ImageStorage(BaseModel):
     def __str__(self):
         return self.image.name
 
+
 class NewsManager(models.Manager):
-    pass
+    def get_visible(self):
+        return self.filter(visibility=True)
 
 class News(BaseModel):
     title = models.CharField(max_length=255)
@@ -66,10 +77,14 @@ class News(BaseModel):
         verbose_name = "News"
         verbose_name_plural = "News"
 
+class FAQManager(models.Manager):
+    def get_visible(self):
+        return self.filter(visibility=True)
 
 class FAQ(BaseModel):
     question = models.CharField(max_length=255)
     answer = models.CharField(max_length=255)
+    objects = FAQManager()
 
     class Meta:
         ordering = ("-created_date",)

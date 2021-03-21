@@ -15,16 +15,25 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from common.urls import admin_news__url
-from common.urls import client_url
+from common.urls import admin_news_url
+from common.urls import client_news_url
+from common.urls import admin_faq_url
+from common.urls import client_faq_url
+from common.views.image import UploadImageAPIView
 
 admin_urls = [
-    path("news/", include((admin_news__url, "news"))),
+    path("news/", include((admin_news_url, "news"))),
+    path("faq/", include((admin_faq_url, "faq"))),
 ]
-client_urls = []
+client_urls = [
+    path("news/", include((client_news_url, "news"))),
+    path("faq/", include((client_faq_url, "faq"))),
+]
 
 urlpatterns = [
-    path("admin/", include((admin_urls,"admin1"))),
+    path("", include((client_urls, "client"))),
+    path("admin/", include((admin_urls, "admin1"))),
+    path("upload/", UploadImageAPIView.as_view(), name="upload"),
     path("accounts/", include("accounts.urls")),
     path('django-admin/', admin.site.urls),
 ]
