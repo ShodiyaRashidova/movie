@@ -8,6 +8,11 @@ from django.utils import timezone
 from django.utils.text import slugify
 
 
+class BaseManager(models.Manager):
+    def get_visible(self):
+        return self.filter(visibility=True)
+
+
 class BaseModel(models.Model):
     guid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
     created_date = models.DateTimeField(auto_now_add=True)
@@ -17,6 +22,7 @@ class BaseModel(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         related_name="+",
+        editable=False
     )
     visibility = models.BooleanField(default=False)
 
@@ -65,6 +71,7 @@ class NewsManager(models.Manager):
     def get_visible(self):
         return self.filter(visibility=True)
 
+
 class News(BaseModel):
     title = models.CharField(max_length=255)
     content = models.TextField()
@@ -72,14 +79,16 @@ class News(BaseModel):
     objects = NewsManager()
 
     class Meta:
-        ordering =("-created_date",)
+        ordering = ("-created_date",)
         db_table = "news"
         verbose_name = "News"
         verbose_name_plural = "News"
 
+
 class FAQManager(models.Manager):
     def get_visible(self):
         return self.filter(visibility=True)
+
 
 class FAQ(BaseModel):
     question = models.CharField(max_length=255)
@@ -91,4 +100,3 @@ class FAQ(BaseModel):
         db_table = "faq"
         verbose_name = "FAQ"
         verbose_name_plural = "FAQ"
-

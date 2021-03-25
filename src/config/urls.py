@@ -20,14 +20,18 @@ from common.urls import client_news_url
 from common.urls import admin_faq_url
 from common.urls import client_faq_url
 from common.views.image import UploadImageAPIView
+from movies.urls import admin_url
+from movies.urls import client_url
 
 admin_urls = [
     path("news/", include((admin_news_url, "news"))),
     path("faq/", include((admin_faq_url, "faq"))),
+    path('movies/', include((admin_url, "movies"))),
 ]
 client_urls = [
     path("news/", include((client_news_url, "news"))),
     path("faq/", include((client_faq_url, "faq"))),
+    path('movies/', include((client_url, "movies"))),
 ]
 
 urlpatterns = [
