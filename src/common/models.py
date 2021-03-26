@@ -10,7 +10,7 @@ from django.utils.text import slugify
 
 class BaseManager(models.Manager):
     def get_visible(self):
-        return self.filter(visibility=True)
+        return self.filter(visibility=True).order_by('-id')
 
 
 class BaseModel(models.Model):

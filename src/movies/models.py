@@ -16,7 +16,12 @@ class Genre(BaseModel):
 
 
 class MovieManager(BaseManager):
-    pass
+
+    def create_with_genre(self, data, user):
+        genres = data.pop("genre")
+        movie = Movie.objects.create(**data, creator=user)
+        movie.genre.set(genres)
+        return movie
 
 
 class Movie(BaseModel):
@@ -32,22 +37,16 @@ class Movie(BaseModel):
     company = models.CharField(max_length=255)
     description = models.TextField()
     duration = models.DurationField()
-    age_limit = models.PositiveIntegerField(default=0)
+    age_limit = models.PositiveIntegerField()
+    rating = models.PositiveIntegerField()
     objects = MovieManager()
 
-
-class MovieRating(models.Model):
-    movie = models.ForeignKey(Movie, related_name="rating",
-                              related_query_name="rate",
-                              on_delete=models.CASCADE)
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.SET_NULL,
-        null=True,
-        related_name="rating1",
-        related_query_name="rate1",
-        editable=False
-    )
+    def update_with_genre(self, data):
+        genres = data.pop("genre")
+        for field, value in data.items():
+            setattr(self, field, value)
+        self.save()
+        self.genre.set(genres)
 
 
 class Hall(models.Model):

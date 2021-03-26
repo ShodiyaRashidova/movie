@@ -4,7 +4,9 @@ from movies.views.genre import CreateGenreView, UpdateGenreView, \
     DetailGenreView, DeleteGenreView, AdminListGenreView, ListGenreView
 from movies.views.hall import CreateHallView, UpdateHallView, DetailHallView, \
     DeleteHallView, AdminListHallView
-from movies.views.movie import CreateMovieView, UpdateMovieView, DeleteMovieView
+from movies.views.movie import CreateMovieView, UpdateMovieView, \
+    DeleteMovieView, DetailMovieView, AdminListMovieView, ListMovieView, \
+    AdminDetailMovieView
 
 admin_genre_url = [
     path("", AdminListGenreView.as_view(), name="list"),
@@ -23,10 +25,10 @@ admin_hall_url = [
 ]
 
 admin_movie_url = [
-    # path("", AdminListHallView.as_view(), name="list"),
+    path("", AdminListMovieView.as_view(), name="list"),
     path("create/", CreateMovieView.as_view(), name="create"),
     path("<uuid:guid>/update/", UpdateMovieView.as_view(), name="update"),
-    # path("<uuid:guid>/", DetailHallView.as_view(), name="detail"),
+    path("<uuid:guid>/", AdminDetailMovieView.as_view(), name="detail"),
     path("<uuid:guid>/delete/", DeleteMovieView.as_view(), name="delete"),
 ]
 
@@ -37,5 +39,8 @@ admin_url = [
 ]
 
 client_url = [
-    path("genre/", ListGenreView.as_view(), name="list"),
+    path("genre/", ListGenreView.as_view(), name="genre_list"),
+    path("movie/", ListMovieView.as_view(), name="movie_list"),
+    path("movie/<uuid:guid>/", DetailMovieView.as_view(), name="movie_detail"),
+
 ]
