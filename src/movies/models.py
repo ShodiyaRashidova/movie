@@ -14,6 +14,9 @@ class Genre(BaseModel):
     title = models.CharField(max_length=30)
     objects = GenreManager()
 
+    def __str__(self):
+        return f"{self.title}"
+
 
 class MovieManager(BaseManager):
 
@@ -48,6 +51,9 @@ class Movie(BaseModel):
         self.save()
         self.genre.set(genres)
 
+    def __str__(self):
+        return f"{self.title}"
+
 
 class Hall(models.Model):
     guid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
@@ -63,6 +69,9 @@ class Hall(models.Model):
         editable=False
     )
 
+    def __str__(self):
+        return f"{self.name}"
+
 
 class MovieSchedule(BaseModel):
     movie = models.ForeignKey(Movie, related_name="schedules",
@@ -73,6 +82,9 @@ class MovieSchedule(BaseModel):
                              on_delete=models.CASCADE)
     start_time = models.DateTimeField()
     price = models.FloatField()
+
+    def __str__(self):
+        return f"{self.movie}, {self.hall}, {self.start_time}"
 
 
 class MovieComment(models.Model):
@@ -87,3 +99,4 @@ class MovieComment(models.Model):
         related_query_name="comment",
     )
     created_date = models.DateTimeField(auto_now_add=True)
+    content = models.TextField(blank=True)

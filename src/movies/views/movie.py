@@ -42,14 +42,14 @@ class UpdateMovieView(UpdateAPIView):
 class AdminDetailMovieView(RetrieveAPIView):
     serializer_class = MovieSerializer
     permission_classes = (IsAdminUser,)
-    queryset = Movie.objects.all()
+    queryset = Movie.objects.prefetch_related("genre")
     lookup_field = "guid"
 
 
 class DeleteMovieView(DestroyAPIView):
     serializer_class = MovieSerializer
     permission_classes = (IsAdminUser,)
-    queryset = Movie.objects.prefetch_related("genres")
+    queryset = Movie.objects.all()
     lookup_field = "guid"
 
 
@@ -107,10 +107,10 @@ class DetailMovieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
         exclude = (
-        "id", "created_date", "modified_date", "creator", "visibility")
+            "id", "created_date", "modified_date", "creator", "visibility")
 
 
 class DetailMovieView(RetrieveAPIView):
     serializer_class = DetailMovieSerializer
-    queryset = Movie.objects.get_visible()
+    queryset = Movie.objects.get_visible().prefetch_related("genre")
     lookup_field = "guid"

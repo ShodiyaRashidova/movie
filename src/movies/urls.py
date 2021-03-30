@@ -7,6 +7,9 @@ from movies.views.hall import CreateHallView, UpdateHallView, DetailHallView, \
 from movies.views.movie import CreateMovieView, UpdateMovieView, \
     DeleteMovieView, DetailMovieView, AdminListMovieView, ListMovieView, \
     AdminDetailMovieView
+from movies.views.movie_schedule import CreateMovieScheduleView, \
+    UpdateMovieScheduleView, AdminDetailMovieScheduleView, \
+    DeleteMovieScheduleView, AdminListMovieScheduleView
 
 admin_genre_url = [
     path("", AdminListGenreView.as_view(), name="list"),
@@ -32,10 +35,24 @@ admin_movie_url = [
     path("<uuid:guid>/delete/", DeleteMovieView.as_view(), name="delete"),
 ]
 
+admin_movie_schedule_url = [
+
+    path("", AdminListMovieScheduleView.as_view(), name="list"),
+    path("create/", CreateMovieScheduleView.as_view(), name="create"),
+    path("<uuid:guid>/update/", UpdateMovieScheduleView.as_view(),
+         name="update"),
+    path("<uuid:guid>/", AdminDetailMovieScheduleView.as_view(), name="detail"),
+    path("<uuid:guid>/delete/", DeleteMovieScheduleView.as_view(),
+         name="delete"),
+
+]
+
 admin_url = [
     path("genre/", include((admin_genre_url, "genre"))),
     path("hall/", include((admin_hall_url, "hall"))),
     path("movie/", include((admin_movie_url, "movie"))),
+    path("movie-schedule/",
+         include((admin_movie_schedule_url, "movie_schedule"))),
 ]
 
 client_url = [
