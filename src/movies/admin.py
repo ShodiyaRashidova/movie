@@ -24,7 +24,7 @@ class MovieAdmin(admin.ModelAdmin):
 class MovieScheduleAdmin(admin.ModelAdmin):
     model = MovieSchedule
     list_display = (
-        "guid", "movie", "hall", "price", "start_time", "creator",
+        "guid", "movie", "hall", "price", "movie_date", "movie_time", "creator",
         "created_date", "modified_date")
     list_filter = ("movie__title", "hall__name")
 

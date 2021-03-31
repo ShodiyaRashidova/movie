@@ -3,7 +3,7 @@ from rest_framework.generics import CreateAPIView, UpdateAPIView, \
     DestroyAPIView, RetrieveAPIView, ListAPIView
 from rest_framework.permissions import IsAdminUser
 
-from movies.models import Genre, Movie
+from ..models import Genre
 
 
 class GenreSerializer(serializers.ModelSerializer):

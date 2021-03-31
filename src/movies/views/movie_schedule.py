@@ -7,7 +7,7 @@ from rest_framework.generics import CreateAPIView, UpdateAPIView, \
 from rest_framework.permissions import IsAdminUser
 
 from common.pagination import AdminPagination
-from movies.models import MovieSchedule, Movie, Hall
+from ..models import MovieSchedule, Movie, Hall
 
 
 class MovieScheduleSerializer(serializers.ModelSerializer):
@@ -62,7 +62,7 @@ class AdminListMovieScheduleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MovieSchedule
-        fields = ("guid", "movie_title", "hall_name", "price", "start_time")
+        fields = ("guid", "movie_title", "hall_name", "price", "movie_date", "movie_time")
 
 
 class MovieScheduleFilter(filters.FilterSet):

@@ -5,16 +5,18 @@ from django.http import HttpResponsePermanentRedirect
 from django.utils.encoding import smart_str, \
     DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_decode
+from django_filters.rest_framework import DjangoFilterBackend
 
 from rest_framework import status, serializers
 from rest_framework.generics import CreateAPIView, RetrieveAPIView, \
-    UpdateAPIView, GenericAPIView, RetrieveUpdateAPIView
-from rest_framework.permissions import IsAuthenticated
+    UpdateAPIView, GenericAPIView, RetrieveUpdateAPIView, ListAPIView
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
+from common.pagination import AdminPagination
 from .email import send_verify_email, send_reset_password
 from .renderers import UserRenderer
 from .serializers import RegisterSerializer, EmailVerificationSerializer, \
@@ -137,3 +139,14 @@ class UserProfileView(RetrieveUpdateAPIView):
 
     def get_object(self):
         return self.request.user
+
+
+# class AdminListUserView(ListAPIView):
+#     permission_classes = (IsAdminUser,)
+#     serializer_class = AdminListGenreSerializer
+#     pagination_class = AdminPagination
+#     filter_backends = [DjangoFilterBackend]
+#     filterset_class = MovieFilter
+#
+#     def get_queryset(self):
+#         return get_user_model().objects.all().order_by("-id")

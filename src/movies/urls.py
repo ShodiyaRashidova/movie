@@ -7,6 +7,7 @@ from movies.views.hall import CreateHallView, UpdateHallView, DetailHallView, \
 from movies.views.movie import CreateMovieView, UpdateMovieView, \
     DeleteMovieView, DetailMovieView, AdminListMovieView, ListMovieView, \
     AdminDetailMovieView
+from movies.views.movie_comment import CreateMovieCommentView
 from movies.views.movie_schedule import CreateMovieScheduleView, \
     UpdateMovieScheduleView, AdminDetailMovieScheduleView, \
     DeleteMovieScheduleView, AdminListMovieScheduleView
@@ -59,5 +60,7 @@ client_url = [
     path("genre/", ListGenreView.as_view(), name="genre_list"),
     path("movie/", ListMovieView.as_view(), name="movie_list"),
     path("movie/<uuid:guid>/", DetailMovieView.as_view(), name="movie_detail"),
+    path("movie-comment/create/", CreateMovieCommentView.as_view(),
+         name="movie_comment"),
 
 ]

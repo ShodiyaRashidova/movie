@@ -28,6 +28,11 @@ class MovieManager(BaseManager):
 
 
 class Movie(BaseModel):
+    class MovieType(models.TextChoices):
+        PLAY_NOW = "PLAY_NOW"
+        WATCH_ONLINE = "WATCH_ONLINE"
+        UPCOMING = "UPCOMING"
+
     genre = models.ManyToManyField(Genre, related_name="movies",
                                    related_query_name="movie")
     title = models.CharField(max_length=100)
@@ -42,6 +47,8 @@ class Movie(BaseModel):
     duration = models.DurationField()
     age_limit = models.PositiveIntegerField()
     rating = models.PositiveIntegerField()
+    movie_type = models.CharField(choices=MovieType.choices, max_length=15)
+    movie_url = models.URLField(null=True)
     objects = MovieManager()
 
     def update_with_genre(self, data):
@@ -80,7 +87,8 @@ class MovieSchedule(BaseModel):
     hall = models.ForeignKey(Hall, related_name="schedules",
                              related_query_name="schedule",
                              on_delete=models.CASCADE)
-    start_time = models.DateTimeField()
+    movie_date = models.DateField()
+    movie_time= models.TimeField()
     price = models.FloatField()
 
     def __str__(self):
@@ -92,11 +100,11 @@ class MovieComment(models.Model):
     movie = models.ForeignKey(Movie, related_name="comments",
                               related_query_name="comment",
                               on_delete=models.CASCADE)
-    user = models.ForeignKey(
+    creator = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="comments",
         related_query_name="comment",
     )
     created_date = models.DateTimeField(auto_now_add=True)
-    content = models.TextField(blank=True)
+    content = models.TextField()

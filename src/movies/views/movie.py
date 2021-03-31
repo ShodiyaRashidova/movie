@@ -6,7 +6,7 @@ from rest_framework.generics import CreateAPIView, UpdateAPIView, \
 from rest_framework.permissions import IsAdminUser
 
 from common.pagination import AdminPagination, Pagination
-from movies.models import Movie, Genre
+from ..models import Movie, Genre
 
 
 class MovieSerializer(serializers.ModelSerializer):
@@ -57,7 +57,8 @@ class AdminListGenreSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
         fields = (
-            "guid", "title", "movie_image", "published_date", "country",
+            "guid", "title", "movie_image", "movie_type", "published_date",
+            "country",
             "rating",
             "duration", "age_limit", "producer", "company")
 
@@ -66,10 +67,13 @@ class MovieFilter(filters.FilterSet):
     genre = filters.CharFilter(
         field_name="genre__guid", lookup_expr="exact"
     )
+    movie_type = filters.CharFilter(field_name="movie_type",
+                                    lookup_expr="exact")
+    search = filters.CharFilter(field_name="title", lookup_expr="icontains")
 
     class Meta:
         model = Movie
-        fields = ["genre"]
+        fields = ["genre", "movie_type"]
 
 
 class AdminListMovieView(ListAPIView):
