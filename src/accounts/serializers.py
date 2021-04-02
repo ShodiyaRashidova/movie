@@ -27,6 +27,7 @@ class LogInSerializer(TokenObtainPairSerializer):
                 "Activate your account by Email to Login"
             )
         attrs["is_staff"] = self.user.is_staff
+        attrs["is_superuser"] = self.user.is_superuser
         return attrs
 
 

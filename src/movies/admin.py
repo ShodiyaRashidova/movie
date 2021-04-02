@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from movies.models import Genre, Movie, MovieSchedule, Hall
+from movies.models import Genre, Movie, MovieSchedule, Hall, Order
 
 
 class GenreAdmin(admin.ModelAdmin):
@@ -11,7 +11,7 @@ class GenreAdmin(admin.ModelAdmin):
 class HallAdmin(admin.ModelAdmin):
     model = Hall
     list_display = (
-    "guid", "name", "capacity", "creator", "created_date", "modified_date")
+        "guid", "name", "capacity", "creator", "created_date", "modified_date")
 
 
 class MovieAdmin(admin.ModelAdmin):
@@ -29,7 +29,15 @@ class MovieScheduleAdmin(admin.ModelAdmin):
     list_filter = ("movie__title", "hall__name")
 
 
+class OrderAdmin(admin.ModelAdmin):
+    model = Order
+    list_display = (
+        "guid", "schedule", "quantity", "user", "price", "paid", "created_date",
+        "modified_date")
+
+
 admin.site.register(Movie, MovieAdmin)
 admin.site.register(Hall, HallAdmin)
 admin.site.register(Genre, GenreAdmin)
 admin.site.register(MovieSchedule, MovieScheduleAdmin)
+admin.site.register(Order, OrderAdmin)

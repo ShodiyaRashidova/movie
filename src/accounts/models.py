@@ -43,6 +43,9 @@ class UserManager(BaseUserManager):
                              algorithms=['HS256'])
         return self.get_queryset().get(id=payload['user_id'])
 
+    def get_user_list(self):
+        return self.exclude(is_superuser=True).order_by(
+            "-id")
 
 class User(AbstractBaseUser, PermissionsMixin):
     class GenderChoices(models.TextChoices):

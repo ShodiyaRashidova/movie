@@ -1,10 +1,12 @@
-from django.db.models import F
+from django.contrib.postgres.aggregates import ArrayAgg
+from django.db.models import F, Subquery, When
 from django_filters.rest_framework import DjangoFilterBackend
 from django_filters import rest_framework as filters
 from rest_framework import serializers
 from rest_framework.generics import CreateAPIView, UpdateAPIView, \
     DestroyAPIView, RetrieveAPIView, ListAPIView
 from rest_framework.permissions import IsAdminUser
+from sqlparse.sql import Case
 
 from common.pagination import AdminPagination
 from ..models import MovieSchedule, Movie, Hall
@@ -62,7 +64,9 @@ class AdminListMovieScheduleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MovieSchedule
-        fields = ("guid", "movie_title", "hall_name", "price", "movie_date", "movie_time")
+        fields = (
+            "guid", "movie_title", "hall_name", "price", "movie_date",
+            "movie_time")
 
 
 class MovieScheduleFilter(filters.FilterSet):
@@ -86,35 +90,46 @@ class AdminListMovieScheduleView(ListAPIView):
                                               hall_name=F(
                                                   "hall__name")).order_by("-id")
 
-#
-# class ListMovieSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Movie
-#         fields = (
-#             "guid", "title", "movie_image", "rating", "age_limit", "duration")
-#
-#
-# class ListMovieView(ListAPIView):
-#     serializer_class = ListMovieSerializer
-#     pagination_class = Pagination
-#     filter_backends = [DjangoFilterBackend]
-#     filterset_class = MovieFilter
-#
-#     def get_queryset(self):
-#         return Movie.objects.get_visible()
-#
-#
-# class DetailMovieSerializer(serializers.ModelSerializer):
-#     genre = serializers.SlugRelatedField(many=True, slug_field="title",
-#                                          read_only=True)
-#
-#     class Meta:
-#         model = Movie
-#         exclude = (
-#             "id", "created_date", "modified_date", "creator", "visibility")
-#
-#
-# class DetailMovieView(RetrieveAPIView):
-#     serializer_class = DetailMovieSerializer
-#     queryset = Movie.objects.get_visible()
-#     lookup_field = "guid"
+
+class ListMovieScheduleSerializer(serializers.ModelSerializer):
+    hall_name = serializers.CharField()
+    available = serializers.IntegerField()
+
+    class Meta:
+        model = MovieSchedule
+        fields = ("guid", "hall_name", "price", "movie_time", "available")
+
+
+class ListMovieScheduleView(ListAPIView):
+    serializer_class = ListMovieScheduleSerializer
+
+    def get_queryset(self):
+        return MovieSchedule.objects.get_times(self.kwargs["guid"],
+                                               self.kwargs["date"])
+
+
+class ListMovieScheduleDateSerializer(serializers.Serializer):
+    movie_dates = serializers.ListField()
+
+
+class ListMovieScheduleDateView(RetrieveAPIView):
+    serializer_class = ListMovieScheduleDateSerializer
+
+    def get_object(self):
+        return MovieSchedule.objects.get_dates(self.kwargs["guid"])
+
+
+class DetailMovieScheduleSerializer(serializers.ModelSerializer):
+    hall_name = serializers.CharField()
+
+    class Meta:
+        model = MovieSchedule
+        fields = ("guid", "hall_name", "price", "movie_time")
+
+
+class DetailMovieScheduleView(RetrieveAPIView):
+    serializer_class = ListMovieScheduleSerializer
+    lookup_field = "guid"
+
+    def get_queryset(self):
+        return MovieSchedule.objects.get_with_hall_name()

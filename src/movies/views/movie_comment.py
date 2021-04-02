@@ -1,3 +1,4 @@
+from django.db.models import F
 from rest_framework import serializers
 from rest_framework.generics import CreateAPIView, ListAPIView
 from rest_framework.permissions import IsAuthenticated
@@ -24,11 +25,27 @@ class CreateMovieCommentView(CreateAPIView):
             **serializer.validated_data, creator=self.request.user)
 
 
-# class ListMovieCommentView(ListAPIView):
-#     serializer_class = AdminListGenreSerializer
-#     pagination_class = AdminPagination
-#     filter_backends = [DjangoFilterBackend]
-#     filterset_class = MovieFilter
-#
-#     def get_queryset(self):
-#         return MovieComment.objects.all()
+class ListMovieCommentSerializer(serializers.ModelSerializer):
+    email = serializers.CharField(read_only=True)
+    first_name = serializers.CharField(read_only=True)
+    last_name = serializers.CharField(read_only=True)
+    user_image = serializers.URLField(read_only=True)
+
+    class Meta:
+        model = MovieComment
+        fields = (
+            "guid", "content", "movie", "email", "first_name", "last_name",
+            "user_image",
+            "created_date")
+
+
+class ListMovieCommentView(ListAPIView):
+    serializer_class = ListMovieCommentSerializer
+
+    def get_queryset(self):
+        return MovieComment.objects.annotate(
+            email=F("creator__email"),
+            first_name=F("creator__first_name"),
+            last_name=F("creator__last_name"),
+            user_image=F("creator__profile_image")
+        ).filter(movie__guid=self.kwargs["guid"])

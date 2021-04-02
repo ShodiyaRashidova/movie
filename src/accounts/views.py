@@ -17,11 +17,15 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from common.pagination import AdminPagination
+from common.permissions import IsSuperAdmin
 from .email import send_verify_email, send_reset_password
 from .renderers import UserRenderer
 from .serializers import RegisterSerializer, EmailVerificationSerializer, \
     LogInSerializer, PasswordUpdateSerializer, PasswordResetSerializer, \
     NewPasswordSerializer, LogoutSerizalizer
+
+from django_filters.rest_framework import DjangoFilterBackend
+from django_filters import rest_framework as filters
 
 
 class CustomRedirect(HttpResponsePermanentRedirect):
@@ -141,12 +145,43 @@ class UserProfileView(RetrieveUpdateAPIView):
         return self.request.user
 
 
-# class AdminListUserView(ListAPIView):
-#     permission_classes = (IsAdminUser,)
-#     serializer_class = AdminListGenreSerializer
-#     pagination_class = AdminPagination
-#     filter_backends = [DjangoFilterBackend]
-#     filterset_class = MovieFilter
-#
-#     def get_queryset(self):
-#         return get_user_model().objects.all().order_by("-id")
+class AdminListUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = get_user_model()
+        fields = ("guid", "email", "first_name", "last_name", "is_staff")
+
+
+class UserFilter(filters.FilterSet):
+    staff = filters.CharFilter(
+        field_name="is_staff", lookup_expr="exact"
+    )
+
+    class Meta:
+        model = get_user_model()
+        fields = ["staff"]
+
+
+
+class AdminListUserView(ListAPIView):
+    permission_classes = (IsSuperAdmin,)
+    serializer_class = AdminListUserSerializer
+    pagination_class = AdminPagination
+
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = UserFilter
+
+    def get_queryset(self):
+        return get_user_model().objects.get_user_list()
+
+
+class UserStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = get_user_model()
+        fields = ("is_staff",)
+
+
+class UpdateUserStatusView(UpdateAPIView):
+    serializer_class = UserStatusSerializer
+    permission_classes = (IsSuperAdmin,)
+    queryset = get_user_model().objects.all()
+    lookup_field = "guid"

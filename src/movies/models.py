@@ -1,7 +1,10 @@
 import uuid
+from datetime import date
 
 from django.conf import settings
+from django.contrib.postgres.aggregates import ArrayAgg
 from django.db import models
+from django.db.models import F, Sum, Case, When
 
 from common.models import BaseModel, BaseManager
 
@@ -26,6 +29,9 @@ class MovieManager(BaseManager):
         movie.genre.set(genres)
         return movie
 
+    def get_with_genre_visible(self):
+        return self.prefetch_related("genre").filter(visibility=True).order_by('-id')
+
 
 class Movie(BaseModel):
     class MovieType(models.TextChoices):
@@ -46,7 +52,7 @@ class Movie(BaseModel):
     description = models.TextField()
     duration = models.DurationField()
     age_limit = models.PositiveIntegerField()
-    rating = models.PositiveIntegerField()
+    rating = models.FloatField()
     movie_type = models.CharField(choices=MovieType.choices, max_length=15)
     movie_url = models.URLField(null=True)
     objects = MovieManager()
@@ -80,6 +86,43 @@ class Hall(models.Model):
         return f"{self.name}"
 
 
+class MovieScheduleManager(models.Manager):
+    def get_dates(self, movie_guid):
+        result = self.values("movie").annotate(
+            movie_dates=ArrayAgg("movie_date", ordering="movie_date",
+                                 distinct=True)
+        ).values("movie_dates").filter(movie__guid=movie_guid,
+                                       movie_date__gte=date.today())
+        if result:
+            return result[0]
+
+    def get_times(self, movie_guid, movie_date):
+        return self.annotate(hall_name=F("hall__name"),
+                             available=Sum("hall__capacity") - Sum(
+                                 Case(
+                                     When(order__paid=True,
+                                          then="order__quantity"
+                                          ),
+                                     default=0
+                                 )
+                             )
+                             ).filter(
+            movie__guid=movie_guid,
+            movie_date=movie_date).order_by(
+            "movie_time")
+
+    def get_with_hall_name(self):
+        return self.annotate(hall_name=F("hall__name"),
+                             available=Sum("hall__capacity") - Sum(
+                                 Case(
+                                     When(order__paid=True,
+                                          then="order__quantity"
+                                          ),
+                                     default=0
+                                 )
+                             ))
+
+
 class MovieSchedule(BaseModel):
     movie = models.ForeignKey(Movie, related_name="schedules",
                               related_query_name="schedule",
@@ -88,11 +131,12 @@ class MovieSchedule(BaseModel):
                              related_query_name="schedule",
                              on_delete=models.CASCADE)
     movie_date = models.DateField()
-    movie_time= models.TimeField()
+    movie_time = models.TimeField()
     price = models.FloatField()
+    objects = MovieScheduleManager()
 
     def __str__(self):
-        return f"{self.movie}, {self.hall}, {self.start_time}"
+        return f"{self.movie}, {self.hall}, {self.movie_date}, {self.movie_time}"
 
 
 class MovieComment(models.Model):
@@ -108,3 +152,20 @@ class MovieComment(models.Model):
     )
     created_date = models.DateTimeField(auto_now_add=True)
     content = models.TextField()
+
+
+class Order(models.Model):
+    guid = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
+    schedule = models.ForeignKey(MovieSchedule, related_name="orders",
+                                 related_query_name="order",
+                                 on_delete=models.DO_NOTHING)
+    quantity = models.PositiveIntegerField()
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.DO_NOTHING,
+        related_name="orders",
+    )
+    price = models.FloatField()
+    paid = models.BooleanField(default=False)
+    created_date = models.DateTimeField(auto_now_add=True)
+    modified_date = models.DateTimeField(auto_now=True)

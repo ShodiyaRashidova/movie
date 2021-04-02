@@ -88,10 +88,12 @@ class AdminListMovieView(ListAPIView):
 
 
 class ListMovieSerializer(serializers.ModelSerializer):
+    genre = serializers.SlugRelatedField(many=True, slug_field="title",
+                                         read_only=True)
     class Meta:
         model = Movie
         fields = (
-            "guid", "title", "movie_image", "rating", "age_limit", "duration")
+            "guid", "title","genre", "movie_image", "rating", "age_limit", "duration")
 
 
 class ListMovieView(ListAPIView):
@@ -101,7 +103,7 @@ class ListMovieView(ListAPIView):
     filterset_class = MovieFilter
 
     def get_queryset(self):
-        return Movie.objects.get_visible()
+        return Movie.objects.get_with_genre_visible()
 
 
 class DetailMovieSerializer(serializers.ModelSerializer):
@@ -116,5 +118,5 @@ class DetailMovieSerializer(serializers.ModelSerializer):
 
 class DetailMovieView(RetrieveAPIView):
     serializer_class = DetailMovieSerializer
-    queryset = Movie.objects.get_visible().prefetch_related("genre")
+    queryset = Movie.objects.get_with_genre_visible()
     lookup_field = "guid"
