@@ -21,7 +21,7 @@ urlpatterns = [
     path('password-reset-complete/', SetNewPasswordAPIView.as_view(),
          name='password-reset-complete'),
     path('email-verify/', VerifyEmail.as_view(), name="email-verify"),
-    path('profile/', UserProfileView.as_view(), name="email-verify"),
+    path('profile/', UserProfileView.as_view(), name="profile"),
     path('users/', AdminListUserView.as_view(), name="user_list"),
     path("users/<uuid:guid>/", UpdateUserStatusView.as_view(),
          name="user_list"),
