@@ -5,6 +5,7 @@ from django.conf import settings
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.db import models
 from django.db.models import F, Sum, Case, When
+from django.db.models.functions import Coalesce
 
 from common.models import BaseModel, BaseManager
 
@@ -30,7 +31,8 @@ class MovieManager(BaseManager):
         return movie
 
     def get_with_genre_visible(self):
-        return self.prefetch_related("genre").filter(visibility=True).order_by('-id')
+        return self.prefetch_related("genre").filter(visibility=True).order_by(
+            '-id')
 
 
 class Movie(BaseModel):
@@ -98,14 +100,9 @@ class MovieScheduleManager(models.Manager):
 
     def get_times(self, movie_guid, movie_date):
         return self.annotate(hall_name=F("hall__name"),
-                             available=Sum("hall__capacity") - Sum(
-                                 Case(
-                                     When(order__paid=True,
-                                          then="order__quantity"
-                                          ),
-                                     default=0
-                                 )
-                             )
+                             available=Sum("hall__capacity", distinct=True) - Coalesce(Sum(
+                                 "order__quantity"
+                             ), 0)
                              ).filter(
             movie__guid=movie_guid,
             movie_date=movie_date).order_by(
@@ -113,14 +110,9 @@ class MovieScheduleManager(models.Manager):
 
     def get_with_hall_name(self):
         return self.annotate(hall_name=F("hall__name"),
-                             available=Sum("hall__capacity") - Sum(
-                                 Case(
-                                     When(order__paid=True,
-                                          then="order__quantity"
-                                          ),
-                                     default=0
-                                 )
-                             ))
+                             available=Sum("hall__capacity", distinct=True) - Coalesce(Sum(
+                                 "order__quantity"
+                             ), 0))
 
 
 class MovieSchedule(BaseModel):
@@ -137,6 +129,12 @@ class MovieSchedule(BaseModel):
 
     def __str__(self):
         return f"{self.movie}, {self.hall}, {self.movie_date}, {self.movie_time}"
+
+    def get_available(self):
+        result = self.hall.capacity - self.orders.aggregate(
+            booked=Coalesce(Sum("quantity"), 0)).get("booked")
+        print(result)
+        return result
 
 
 class MovieComment(models.Model):

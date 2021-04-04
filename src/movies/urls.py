@@ -15,6 +15,8 @@ from movies.views.movie_schedule import CreateMovieScheduleView, \
     UpdateMovieScheduleView, AdminDetailMovieScheduleView, \
     DeleteMovieScheduleView, AdminListMovieScheduleView, ListMovieScheduleView, \
     ListMovieScheduleDateView, DetailMovieScheduleView
+from movies.views.order import CreateOrderView, ListOrderView, \
+    AdminListOrderView
 
 admin_genre_url = [
     path("", AdminListGenreView.as_view(), name="list"),
@@ -58,6 +60,9 @@ admin_url = [
     path("movie/", include((admin_movie_url, "movie"))),
     path("movie-schedule/",
          include((admin_movie_schedule_url, "movie_schedule"))),
+    path("order/movie-schedule/<uuid:guid>/", AdminListOrderView.as_view(),
+         name="order"),
+
 ]
 
 
@@ -92,5 +97,9 @@ client_url = [
     path("movie-schedule/<uuid:guid>/times/<date:date>/",
          ListMovieScheduleView.as_view(),
          name="movie_schedule_time"),
+    path("order/create/", CreateOrderView.as_view(),
+         name="order_create"),
+    path("order/", ListOrderView.as_view(),
+         name="order_list"),
 
 ]
