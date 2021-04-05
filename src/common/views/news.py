@@ -72,6 +72,8 @@ class ListNewsSerializer(serializers.Serializer):
     guid = serializers.UUIDField(read_only=True)
     thumbnail = serializers.CharField()
     title = serializers.CharField(max_length=255)
+    content = serializers.CharField()
+    created_date = serializers.DateTimeField(read_only=True)
 
 
 class DetailNewsSerializer(serializers.Serializer):
@@ -79,6 +81,7 @@ class DetailNewsSerializer(serializers.Serializer):
     thumbnail = serializers.CharField()
     title = serializers.CharField(max_length=255)
     content = serializers.CharField()
+    created_date = serializers.DateTimeField(read_only=True)
 
 
 class ListNewsView(ListAPIView):
