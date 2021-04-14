@@ -1,12 +1,10 @@
-from django.contrib.postgres.aggregates import ArrayAgg
-from django.db.models import F, Subquery, When
+from django.db.models import F
 from django_filters.rest_framework import DjangoFilterBackend
 from django_filters import rest_framework as filters
 from rest_framework import serializers
 from rest_framework.generics import CreateAPIView, UpdateAPIView, \
     DestroyAPIView, RetrieveAPIView, ListAPIView
 from rest_framework.permissions import IsAdminUser
-from sqlparse.sql import Case
 
 from common.pagination import AdminPagination
 from ..models import MovieSchedule, Movie, Hall

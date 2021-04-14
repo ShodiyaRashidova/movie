@@ -3,7 +3,8 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.generics import CreateAPIView, ListAPIView
 from rest_framework.permissions import IsAuthenticated
 
-from movies.models import Order, MovieSchedule, Hall
+from accounts.email import send_order_info
+from movies.models import Order, MovieSchedule
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -31,8 +32,10 @@ class CreateOrderView(CreateAPIView):
     permission_classes = (IsAuthenticated,)
 
     def perform_create(self, serializer):
-        serializer.instance = Order.objects.create(
+        order = Order.objects.create(
             **serializer.validated_data, user=self.request.user)
+        serializer.instance = order
+        send_order_info(user=self.request.user, order=order)
 
 
 class MovieScheduleSerializer(serializers.Serializer):

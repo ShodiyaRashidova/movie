@@ -60,3 +60,16 @@ def send_reset_password(request, user):
         subject=data['email_subject'], body=data['email_body'],
         to=[data['to_email']])
     EmailThread(email).start()
+
+
+def send_order_info(user, order):
+    data = {
+        'email_body': f'Hello, {user.first_name} You booked {order.quantity} ticket(s)'
+                      f' for {order.schedule.movie.title} film in '
+                      f' {order.schedule.movie_date} {order.schedule.movie_time} ',
+        'to_email': user.email,
+        'email_subject': 'Oder info '}
+    email = EmailMessage(
+        subject=data['email_subject'], body=data['email_body'],
+        to=[data['to_email']])
+    EmailThread(email).start()

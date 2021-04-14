@@ -133,7 +133,6 @@ class MovieSchedule(BaseModel):
     def get_available(self):
         result = self.hall.capacity - self.orders.aggregate(
             booked=Coalesce(Sum("quantity"), 0)).get("booked")
-        print(result)
         return result
 
 
